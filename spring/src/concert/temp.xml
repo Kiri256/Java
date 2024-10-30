@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <bean id="trackCounter" class="soundSystem.TrackCounter"/>
+    <bean id="cd" class="soundSystem.BlankDisc"/>
+
+    <aop:aspectj-autoproxy/>
+    <aop:config>
+        <aop:aspect ref="trackCounter">
+            <aop:declare-parents types-matching="concert.Performance+"
+                                 implement-interface="concert.Encoreable"
+                                 default-impl="concert.DefaultEncoreable"/>
+            <aop:pointcut id="trackPlayed"
+                          expression="execution(* soundSystem.CompactDisc.play())
+                           and args(trackNumber)"/>
+            <aop:before pointcut-ref="trackPlayed" method="countTrack"/>
+        </aop:aspect>
+    </aop:config>
+</beans>
